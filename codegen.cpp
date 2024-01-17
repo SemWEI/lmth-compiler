@@ -1,16 +1,30 @@
 #include "codegen.h"
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IR/Verifier.h>
+#include <sstream>
+#include <unordered_map>
 
-void CodeGen::generateCode(const ASTNode &root) {
-    llvm::LLVMContext context;
-    llvm::Module module("toy_module", context);
-    llvm::IRBuilder<> builder(context);
+std::string replacePlaceholder(const std::string &placeholder) {
+    static std::unordered_map<std::string, std::string> replacements = {
+        {"PLACEHOLDER_NAME", "ReplacedName"},
+        {"PLACEHOLDER_TYPE", "ReplacedType"}
+    };
 
-    // Implement code generation logic
-    // Generate LLVM IR using the IRBuilder
+    auto it = replacements.find(placeholder);
+    if (it != replacements.end()) {
+        return it->second;
+    }
+    return placeholder; // If no replacement found, return the original
+}
 
-    module.print(llvm::outs(), nullptr);
+std::string CodeGen::generateCode(const ASTNode &root) {
+    std::stringstream generatedCode;
+
+    for (const auto &node : root.children) {
+        if (node.type == TokenType::Placeholder) {
+            generatedCode << replacePlaceholder(node.value);
+        } else {
+            generatedCode << node.value;
+        }
+    }
+
+    return generatedCode.str();
 }

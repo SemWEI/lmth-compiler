@@ -6,9 +6,8 @@
 
 enum class TokenType {
     Identifier,
-    Number,
-    Keyword,
-    Symbol,
+    Placeholder,
+    Text,
     EndOfFile
 };
 

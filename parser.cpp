@@ -2,8 +2,10 @@
 
 ASTNode Parser::parse(const std::vector<Token> &tokens) {
     ASTNode root;
-
-    // Implement parsing logic to build the AST from tokens
-
+    for (const auto &token : tokens) {
+        if (token.type != TokenType::EndOfFile) {
+            root.children.push_back({token.type, token.value});
+        }
+    }
     return root;
 }

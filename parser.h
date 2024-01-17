@@ -1,9 +1,19 @@
-#include "parser.h"
+#ifndef PARSER_H
+#define PARSER_H
 
-ASTNode Parser::parse(const std::vector<Token> &tokens) {
-    ASTNode root;
+#include <vector>
+#include <string>
+#include "lexer.h"
 
-    // Implement parsing logic to build the AST from tokens
+struct ASTNode {
+    TokenType type;
+    std::string value;
+    std::vector<ASTNode> children;
+};
 
-    return root;
-}
+class Parser {
+public:
+    ASTNode parse(const std::vector<Token> &tokens);
+};
+
+#endif // PARSER_H
