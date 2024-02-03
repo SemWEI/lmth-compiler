@@ -19,16 +19,30 @@ std::string readFile(const std::string &filePath) {
 int main() {
     std::cout << "Toy Compiler\n";
 
+    // Initialize the Lexer, Parser, and CodeGen components
     Lexer lexer;
     Parser parser;
     CodeGen codegen;
 
+    // Input template source code
     std::string templateSource = readFile("template.ts");
 
+    // Lexing phase
     auto tokens = lexer.tokenize(templateSource);
-    auto ast = parser.parse(tokens);
-    std::string generatedCode = codegen.generateCode(ast);
 
+    // Parsing phase (template tokens)
+    auto astTemplate = parser.parse(tokens);
+
+    // Input JSON data
+    std::string jsonSource = readFile("test.json");
+
+    // Parsing phase (JSON data)
+    auto astData = parser.parseJSON(jsonSource);
+
+    // Code generation phase
+    std::string generatedCode = codegen.generateCode(astTemplate, astData);
+
+    // Output the generated code
     std::ofstream outFile("output.ts");
     if (outFile) {
         outFile << generatedCode;

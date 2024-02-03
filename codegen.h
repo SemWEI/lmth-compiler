@@ -5,7 +5,7 @@
 
 class CodeGen {
 public:
-    std::string generateCode(const ASTNode &root);
+    std::string generateCode(const ASTNode &templateRoot, const ASTNode &dataRoot);
 };
 
 #endif // CODEGEN_H

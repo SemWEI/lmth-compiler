@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 #include "lexer.h"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 struct ASTNode {
     TokenType type;
@@ -14,6 +17,7 @@ struct ASTNode {
 class Parser {
 public:
     ASTNode parse(const std::vector<Token> &tokens);
+    ASTNode parseJSON(const std::string &jsonStr);
 };
 
 #endif // PARSER_H
