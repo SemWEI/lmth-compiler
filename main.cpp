@@ -8,6 +8,7 @@
 
 namespace fs = std::filesystem;
 
+// Function to read file contents
 std::string readFile(const std::string &filePath) {
     std::ifstream file(filePath);
     if (!file) {
@@ -20,48 +21,50 @@ std::string readFile(const std::string &filePath) {
 }
 
 int main() {
-    /*
-     std::string templateDir = "templates";
-
-    for (const auto &entry : fs::directory_iterator(templateDir)) {
-        if (entry.is_regular_file()) {
-            std::string templateSource = readFile(entry.path().string());
-            auto tokens = lexer.tokenize(templateSource);
-            auto astTemplate = parser.parse(tokens);
-            std::string generatedCode = codegen.generateCode(astTemplate, astData);
-
-            std::string outputFileName = "output_" + entry.path().stem().string() + ".ts";
-            std::ofstream outFile(outputFileName);
-            if (outFile) {
-                outFile << generatedCode;
-                std::cout << "Generated code written to " << outputFileName << std::endl;
-            } else {
-                std::cerr << "Could not write to output file " << outputFileName << std::endl;
-            }
-        }
-    }*/
-
     Lexer lexer;
     Parser parser;
     CodeGen codegen;
 
+    // Read and parse the model.json file
     std::string jsonSource = readFile("model.json");
     auto astData = parser.parseJSON(jsonSource);
 
-    std::string templateDir = "templates";
+    // Directories for Angular and Express.js templates
+    std::string angularTemplateDir = "templates/angular";
+    std::string expressTemplateDir = "templates/express";
 
-    for (const auto &entry : fs::directory_iterator(templateDir)) {
+    // Process Angular templates
+    for (const auto &entry : fs::directory_iterator(angularTemplateDir)) {
         if (entry.is_regular_file()) {
             std::string templateSource = readFile(entry.path().string());
             auto tokens = lexer.tokenize(templateSource);
             auto astTemplate = parser.parse(tokens);
             std::string generatedCode = codegen.generateCode(astTemplate, astData);
 
-            std::string outputFileName = "output_" + entry.path().stem().string() + ".ts";
+            std::string outputFileName = "output/angular/" + entry.path().stem().string() + ".ts";
             std::ofstream outFile(outputFileName);
             if (outFile) {
                 outFile << generatedCode;
-                std::cout << "Generated code written to " << outputFileName << std::endl;
+                std::cout << "Generated Angular code written to " << outputFileName << std::endl;
+            } else {
+                std::cerr << "Could not write to output file " << outputFileName << std::endl;
+            }
+        }
+    }
+
+    // Process Express.js templates
+    for (const auto &entry : fs::directory_iterator(expressTemplateDir)) {
+        if (entry.is_regular_file()) {
+            std::string templateSource = readFile(entry.path().string());
+            auto tokens = lexer.tokenize(templateSource);
+            auto astTemplate = parser.parse(tokens);
+            std::string generatedCode = codegen.generateCode(astTemplate, astData);
+
+            std::string outputFileName = "output/express/" + entry.path().stem().string() + ".js";
+            std::ofstream outFile(outputFileName);
+            if (outFile) {
+                outFile << generatedCode;
+                std::cout << "Generated Express.js code written to " << outputFileName << std::endl;
             } else {
                 std::cerr << "Could not write to output file " << outputFileName << std::endl;
             }

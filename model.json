@@ -1,5 +1,5 @@
 {
-    "appName": "TEst App",
+    "appName": "NEW APP with Express",
     "components": [
       {
         "name": "UserList",
@@ -44,6 +44,47 @@
         ]
       }
     ],
-    "routing": true
+    "routing": true,
+    "backend": {
+      "routes": [
+        {
+          "path": "/users",
+          "controller": "UserController"
+        }
+      ],
+      "controllers": [
+        {
+          "name": "UserController",
+          "methods": [
+            {
+              "name": "getAllUsers",
+              "route": "/users",
+              "type": "get"
+            },
+            {
+              "name": "getUserById",
+              "route": "/users/:id",
+              "type": "get"
+            }
+          ]
+        }
+      ],
+      "services": [
+        {
+          "name": "UserService",
+          "methods": [
+            {
+              "name": "findAll",
+              "type": "User[]"
+            },
+            {
+              "name": "findById",
+              "type": "User",
+              "param": "id: number"
+            }
+          ]
+        }
+      ]
+    }
   }
   
