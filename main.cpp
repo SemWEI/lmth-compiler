@@ -20,13 +20,32 @@ std::string readFile(const std::string &filePath) {
 }
 
 int main() {
-    std::cout << "Toy Compiler\n";
+    /*
+     std::string templateDir = "templates";
+
+    for (const auto &entry : fs::directory_iterator(templateDir)) {
+        if (entry.is_regular_file()) {
+            std::string templateSource = readFile(entry.path().string());
+            auto tokens = lexer.tokenize(templateSource);
+            auto astTemplate = parser.parse(tokens);
+            std::string generatedCode = codegen.generateCode(astTemplate, astData);
+
+            std::string outputFileName = "output_" + entry.path().stem().string() + ".ts";
+            std::ofstream outFile(outputFileName);
+            if (outFile) {
+                outFile << generatedCode;
+                std::cout << "Generated code written to " << outputFileName << std::endl;
+            } else {
+                std::cerr << "Could not write to output file " << outputFileName << std::endl;
+            }
+        }
+    }*/
 
     Lexer lexer;
     Parser parser;
     CodeGen codegen;
 
-    std::string jsonSource = readFile("template.json");
+    std::string jsonSource = readFile("model.json");
     auto astData = parser.parseJSON(jsonSource);
 
     std::string templateDir = "templates";
