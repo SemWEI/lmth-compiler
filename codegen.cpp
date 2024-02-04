@@ -10,6 +10,47 @@ std::string CodeGen::generateFields(const ASTNode &fieldsNode) {
     return fields.str();
 }
 
+std::string CodeGen::generateMethods(const ASTNode &methodsNode) {
+    std::stringstream methods;
+    for (const auto &method : methodsNode.children) {
+        methods << method.value << "(): " << method.children[0].value
+                << " {\n  return this.http.get<" << method.children[0].value
+                << ">(`" << method.children[1].value << "`);\n}\n\n";
+    }
+    return methods.str();
+}
+
+std::string CodeGen::generateRoutes(const ASTNode &componentsNode) {
+    std::stringstream routes;
+    for (const auto &component : componentsNode.children) {
+        routes << "{ path: '" << component.children[3].value << "', component: "
+               << component.value << "Component },\n";
+    }
+    return routes.str();
+}
+
+std::string CodeGen::generateImports(const ASTNode &componentsNode, const std::string &type) {
+    std::stringstream imports;
+    for (const auto &component : componentsNode.children) {
+        if (type == "component") {
+            imports << "import { " << component.value << "Component } from './"
+                    << component.value << ".component';\n";
+        } else if (type == "service") {
+            imports << "import { " << component.value << "Service } from './services/"
+                    << component.value << ".service';\n";
+        }
+    }
+    return imports.str();
+}
+
+std::string CodeGen::generateDeclarations(const ASTNode &componentsNode) {
+    std::stringstream declarations;
+    for (const auto &component : componentsNode.children) {
+        declarations << component.value << "Component,\n";
+    }
+    return declarations.str();
+}
+
 std::string CodeGen::replacePlaceholders(const std::string &templateStr, const ASTNode &dataNode) {
     std::string result = templateStr;
 
@@ -19,6 +60,16 @@ std::string CodeGen::replacePlaceholders(const std::string &templateStr, const A
         if (pos != std::string::npos) {
             if (child.value == "FIELDS") {
                 result.replace(pos, placeholder.length(), generateFields(child));
+            } else if (child.value == "METHOD_IMPLEMENTATIONS") {
+                result.replace(pos, placeholder.length(), generateMethods(child));
+            } else if (child.value == "ROUTES") {
+                result.replace(pos, placeholder.length(), generateRoutes(child));
+            } else if (child.value == "IMPORT_COMPONENTS") {
+                result.replace(pos, placeholder.length(), generateImports(child, "component"));
+            } else if (child.value == "IMPORT_SERVICES") {
+                result.replace(pos, placeholder.length(), generateImports(child, "service"));
+            } else if (child.value == "DECLARATIONS") {
+                result.replace(pos, placeholder.length(), generateDeclarations(child));
             } else {
                 result.replace(pos, placeholder.length(), child.children[0].value);
             }
@@ -40,5 +91,3 @@ std::string CodeGen::generateCode(const ASTNode &templateRoot, const ASTNode &da
         }
     }
 
-    return generatedCode.str();
-}
