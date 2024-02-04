@@ -1,9 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include "lexer.h"
 #include "parser.h"
 #include "codegen.h"
+
+namespace fs = std::filesystem;
 
 std::string readFile(const std::string &filePath) {
     std::ifstream file(filePath);
@@ -19,36 +22,31 @@ std::string readFile(const std::string &filePath) {
 int main() {
     std::cout << "Toy Compiler\n";
 
-    // Initialize the Lexer, Parser, and CodeGen components
     Lexer lexer;
     Parser parser;
     CodeGen codegen;
 
-    // Input template source code
-    std::string templateSource = readFile("template.ts");
-
-    // Lexing phase
-    auto tokens = lexer.tokenize(templateSource);
-
-    // Parsing phase (template tokens)
-    auto astTemplate = parser.parse(tokens);
-
-    // Input JSON data
-    std::string jsonSource = readFile("test.json");
-
-    // Parsing phase (JSON data)
+    std::string jsonSource = readFile("template.json");
     auto astData = parser.parseJSON(jsonSource);
 
-    // Code generation phase
-    std::string generatedCode = codegen.generateCode(astTemplate, astData);
+    std::string templateDir = "templates";
 
-    // Output the generated code
-    std::ofstream outFile("output.ts");
-    if (outFile) {
-        outFile << generatedCode;
-        std::cout << "Generated code written to output.ts" << std::endl;
-    } else {
-        std::cerr << "Could not write to output file." << std::endl;
+    for (const auto &entry : fs::directory_iterator(templateDir)) {
+        if (entry.is_regular_file()) {
+            std::string templateSource = readFile(entry.path().string());
+            auto tokens = lexer.tokenize(templateSource);
+            auto astTemplate = parser.parse(tokens);
+            std::string generatedCode = codegen.generateCode(astTemplate, astData);
+
+            std::string outputFileName = "output_" + entry.path().stem().string() + ".ts";
+            std::ofstream outFile(outputFileName);
+            if (outFile) {
+                outFile << generatedCode;
+                std::cout << "Generated code written to " << outputFileName << std::endl;
+            } else {
+                std::cerr << "Could not write to output file " << outputFileName << std::endl;
+            }
+        }
     }
 
     return 0;
